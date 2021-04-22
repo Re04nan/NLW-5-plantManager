@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // informação sigilosa, tomar cuidado ao subir no git
 const api = axios.create({
-    baseURL: 'http://192.168.0.106:3333'
+    baseURL: 'http://ip:3333'
 });
 
 export default api;
