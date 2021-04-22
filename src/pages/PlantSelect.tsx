@@ -10,6 +10,7 @@ import { PlantCardPrimary } from '../components/PlantCardPrimary';
 import { Header } from '../components/Header';
 import { EnviromentButton } from '../components/EnviromentButton';
 import { Load } from '../components/Load';
+import { useNavigation } from '@react-navigation/core';
 
 import fonts from '../styles/fonts';
 import colors from '../styles/colors';
@@ -40,8 +41,9 @@ export function PlantSelect() {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [loadingMore, setLoadingMore] = useState(false);
-    const [loadedAll, setLoadedAll] = useState(false);
     
+    const navigation = useNavigation();
+
     function handleEnviromentSelected(enviroment: string){
         setEnviromentSelected(enviroment);
 
@@ -82,6 +84,9 @@ export function PlantSelect() {
         setPage(oldValue => oldValue+1);
         fetchPlants();
     }
+    function handlePlantSelect(plant: PlantProps){
+        navigation.navigate('PlantSave', { plant });
+    }
 
     useEffect(() => {
         async function fetchEnviroment() {
@@ -117,6 +122,7 @@ export function PlantSelect() {
             <View>
                 <FlatList
                     data={enviroments}// {[1,2,3,4,5]} 
+                    keyExtractor={(item)=> String(item.key)} // id
                     renderItem={({ item })=>(
                         <EnviromentButton 
                             title={item.title} 
@@ -132,8 +138,12 @@ export function PlantSelect() {
             <View style={styles.plants}>
                 <FlatList
                     data={filteredPlants}
+                    keyExtractor={(item)=> String(item.id)}
                     renderItem={({item}) => (
-                        <PlantCardPrimary data={item} />
+                        <PlantCardPrimary 
+                            data={item}
+                            onPress={()=>handlePlantSelect(item)} 
+                        />
                     )}
                     showsVerticalScrollIndicator={false}
                     numColumns={2} // renderiza a lista em duas colunas

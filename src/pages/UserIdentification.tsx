@@ -8,8 +8,11 @@ import {
     KeyboardAvoidingView,
     TouchableWithoutFeedback,
     Platform,
-    Keyboard
+    Keyboard,
+    Alert
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { useNavigation } from '@react-navigation/core';
 import { Button } from '../components/Button';
 import colors from '../styles/colors';
@@ -31,7 +34,13 @@ export function UserIdentification() {
         setIsFilled(!!value);
         setName(value);
     }
-    function handleSubmit() {
+     async function handleSubmit() {
+        if(!name)
+            return Alert.alert('Me diz como chamar você 😥');
+
+        // a string com @nomeapp:oquevaisersalvo é um padrão utilizado como key ao salvar dados no device 
+        await AsyncStorage.setItem('@plantmanager:user', name); // retorna uma promise
+
         navigation.navigate('Confirmation');
     }
     return (
