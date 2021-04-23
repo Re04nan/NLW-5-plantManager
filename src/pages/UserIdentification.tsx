@@ -36,12 +36,22 @@ export function UserIdentification() {
     }
      async function handleSubmit() {
         if(!name)
-            return Alert.alert('Me diz como chamar você 😥');
+            return Alert.alert('Me diz como chamar você.😥');
 
-        // a string com @nomeapp:oquevaisersalvo é um padrão utilizado como key ao salvar dados no device 
-        await AsyncStorage.setItem('@plantmanager:user', name); // retorna uma promise
+        try{
+            // a string com @nomeapp:oquevaisersalvo é um padrão utilizado como key ao salvar dados no device 
+            await AsyncStorage.setItem('@plantmanager:user', name); // retorna uma promise
+            navigation.navigate('Confirmation', {
+                title: 'Prontinho',
+                subtitle: 'Agora vamos começar a cuidar das suas plantinhas com muito cuidado.',
+                buttonTitle: 'Começar',
+                icon: 'smile',
+                nextScreen: 'PlantSelect',
+            });
+        }catch{
+            Alert.alert('Não foi possível salvar o seu nome.😥');
+        }
 
-        navigation.navigate('Confirmation');
     }
     return (
         <SafeAreaView style={styles.container}>
