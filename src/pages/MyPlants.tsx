@@ -4,11 +4,13 @@ import {
     View,
     Text,
     Image,
-    FlatList
+    FlatList,
+    Alert,
 } from 'react-native';
 import { Header } from '../components/Header';
+import { Load } from '../components/Load';
 import { PlantCardSecondary } from '../components/PlantCardSecondary';
-import { PlantProps, loadPlant } from '../libs/storage';
+import { PlantProps, loadPlant, removePlant } from '../libs/storage';
 import { formatDistance } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
@@ -20,6 +22,29 @@ export function MyPlants(){
     const [myPlants, setMyPlants] = useState<PlantProps[]>();
     const [loading, setLoading] = useState(true);
     const [nextWatered, setNextWatered] = useState<String>();
+
+    function handleRemove(plant:PlantProps){
+        // Alert de confirmação
+        Alert.alert("Remover", `Deseja remover a ${plant.name}?`,[
+            {
+                text: 'Não 🙏🏽',
+                style: 'cancel'
+            },
+            {
+                text: 'Sim 😢',
+                onPress: async () => {
+                    try{
+                        await removePlant(plant.id);
+                        setMyPlants((oldData) =>
+                            oldData?.filter((item) => item.id != plant.id)
+                        );
+                    }catch (error){
+                        Alert.alert("Não foi possível remover! 😥");
+                    }
+                }
+            }
+        ]);
+    }
 
     useEffect(()=>{
         async function loadStorageData(){
@@ -42,6 +67,8 @@ export function MyPlants(){
         loadStorageData();
     },[]);
 
+    if(loading)
+        return <Load/>
     return(
         <View style={styles.container}>
             <Header/>
@@ -66,9 +93,10 @@ export function MyPlants(){
                     renderItem={({ item }) => (
                         <PlantCardSecondary
                             data={item}
+                            handleRemove={() => { handleRemove(item)}}
                         />
                     )}
-                    showsHorizontalScrollIndicator={false}
+                    showsVerticalScrollIndicator={false}
                     contentContainerStyle={{}}
                 />
             </View>
